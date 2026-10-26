@@ -7,7 +7,9 @@ python ml\train.py --config ml\config.json
 python ml\evaluate.py --config ml\config.json
 ```
 
-The fixed seed is `20261026`; the stratified test set contains 203 rows and
+The fixed seed is `20261026`; the downloaded CSV contains 1,014 rows and the
+stratified test set contains 203 rows. The UCI metadata page reports 1,013
+instances, so this one-row provenance discrepancy is disclosed. The test set
 was not used for model selection. Logistic regression was selected after
 standardized preprocessing and five-fold cross-validation. The training data
 contains 562 duplicate rows, so random splitting can overstate generalization.

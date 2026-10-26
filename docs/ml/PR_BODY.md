@@ -16,7 +16,9 @@
 
 ## Scope and evidence
 
-The dataset is UCI Maternal Health Risk (CC BY 4.0), 1,013 rows, SHA-256
+The dataset is UCI Maternal Health Risk (CC BY 4.0). The downloaded CSV has
+1,014 rows while the UCI metadata reports 1,013 instances; this discrepancy is
+disclosed in the dataset card. SHA-256:
 `a1f7025719f84715096e0d1f95ae2e56b57809b9b15449e1836c96a7d976ae9b`.
 The holdout contains 203 rows. ROC-AUC was 0.7819, macro PR-AUC 0.6505,
 macro Brier 0.1668, and macro ECE 0.0961. Mid-risk sensitivity was only

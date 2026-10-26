@@ -8,7 +8,9 @@
   The license permits sharing and adaptation with attribution.
 - **Downloaded file:** `ml/data/maternal-health-risk.csv`
 - **SHA-256:** `a1f7025719f84715096e0d1f95ae2e56b57809b9b15449e1836c96a7d976ae9b`
-- **Rows/features:** 1,013 data rows and 6 features (plus target).
+- **Rows/features:** The downloaded CSV contains 1,014 data rows and 6
+  features (plus target); the UCI metadata page reports 1,013 instances. This
+  one-row provenance discrepancy is retained and disclosed.
 - **Collection context:** Data was collected from hospitals, community
   clinics, and maternal health care facilities in rural Bangladesh through an
   IoT-based risk monitoring system.
