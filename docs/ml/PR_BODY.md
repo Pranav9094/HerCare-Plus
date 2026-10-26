@@ -5,18 +5,23 @@
 - Added an authenticated, stateless `/api/health-risk` contract with strict
   input validation, request-size protection, versioned responses, explicit
   abstention, and urgent-care guidance.
-- Added a transparent, deterministic screening ruleset. It is intentionally
-  not represented as a trained ML model or clinical decision tool.
-- Added unit tests and audit, model-card, limitations, API, dataset-status,
-  clinician-review, progress, and test-report documentation.
-- Updated the README with the evidence-limited scope.
+- Added a transparent fallback ruleset plus a versioned logistic-regression
+  artifact trained from the UCI Maternal Health Risk dataset.
+- Added reproducible quality checks, stratified holdout evaluation,
+  cross-validation, bootstrap sensitivity intervals, calibration diagnostics,
+  subgroup analysis, OOD detection, PSI/KS monitoring, and non-identifying
+  telemetry.
+- Added an authenticated result screen, model/API/docs, and Python/TypeScript
+  tests.
 
 ## Scope and evidence
 
-The repository had no legitimate labeled health-risk dataset, trained model,
-model artifact, or validation evidence. No external data was downloaded and no
-metrics were fabricated. The implementation therefore makes no sensitivity,
-specificity, calibration, subgroup, or clinical-validation claims.
+The dataset is UCI Maternal Health Risk (CC BY 4.0), 1,013 rows, SHA-256
+`a1f7025719f84715096e0d1f95ae2e56b57809b9b15449e1836c96a7d976ae9b`.
+The holdout contains 203 rows. ROC-AUC was 0.7819, macro PR-AUC 0.6505,
+macro Brier 0.1668, and macro ECE 0.0961. Mid-risk sensitivity was only
+0.3284 (95% CI 0.2203–0.4444). These are retrospective research estimates,
+not clinical validation; the dataset contains 562 duplicate rows.
 
 ## Safety and privacy
 
@@ -27,7 +32,8 @@ Unknown fields and out-of-range values are rejected.
 
 ## Verification
 
-- `npm test`: 13 tests passed.
+- `npm test`: 15 tests passed.
+- `python -m unittest discover -s ml\tests`: 3 tests passed.
 - `npm run build`: passed.
 - `git diff --check`: passed.
 - `npm run lint`: pre-existing repository configuration blocker (ESLint 8
@@ -35,7 +41,7 @@ Unknown fields and out-of-range values are rejected.
 
 ## Partial/blockers
 
-Training, evaluation, calibration, OOD detection, drift monitoring, persisted
-screening records, clinician/admin views, and a result-screen UI remain
-blocked or out of scope until the project provides an approved dataset,
-clinical governance, and a persisted authenticated screening data model.
+Clinical validation, probability recalibration, production drift scheduling,
+persisted screening records, clinician/admin views, and browser screenshots
+remain partial or blocked pending clinical governance, a persisted screening
+data model, and a configured browser automation workflow.
