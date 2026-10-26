@@ -9,13 +9,16 @@ export interface ScreeningInput {
   heavyBleeding: boolean;
   faintingOrSevereDizziness: boolean;
   pregnancyPossible: boolean;
+  maternalVitals?: MaternalVitals;
 }
 
 export interface ScreeningResult {
   modelVersion: string;
   riskBand: RiskBand;
-  confidence: "uncertain";
+  confidence: "uncertain" | "screening estimate";
   abstained: boolean;
+  outOfDistribution?: boolean;
+  probability?: number | null;
   factors: string[];
   nextSteps: string[];
   limitation: string;
@@ -76,10 +79,45 @@ export function validateScreeningInput(value: unknown): ScreeningInput {
         "symptomDurationDays",
         "painSeverity",
         ...requiredBooleans,
+        "maternalVitals",
       ].includes(field),
   );
   if (unknownFields.length > 0) {
     throw new Error(`Unknown field: ${unknownFields[0]}.`);
+  }
+
+  const maternalVitals = input.maternalVitals;
+  if (maternalVitals !== undefined) {
+    if (!maternalVitals || typeof maternalVitals !== "object" || Array.isArray(maternalVitals)) {
+      throw new Error("maternalVitals must be an object.");
+    }
+    const vitals = maternalVitals as Record<string, unknown>;
+    const fields = [
+      "age",
+      "systolicBP",
+      "diastolicBP",
+      "bloodSugar",
+      "bodyTemperature",
+      "heartRate",
+    ];
+    const unknownVital = Object.keys(vitals).find((field) => !fields.includes(field));
+    if (unknownVital) throw new Error(`Unknown maternal vital: ${unknownVital}.`);
+    for (const field of fields) {
+      if (typeof vitals[field] !== "number" || !Number.isFinite(vitals[field])) {
+        throw new Error(`${field} must be a finite number.`);
+      }
+    }
+    const vitalValues = fields.map((field) => vitals[field] as number);
+    if (
+      vitalValues[0] < 10 || vitalValues[0] > 70 ||
+      vitalValues[1] < 70 || vitalValues[1] > 160 ||
+      vitalValues[2] < 49 || vitalValues[2] > 100 ||
+      vitalValues[3] < 6 || vitalValues[3] > 19 ||
+      vitalValues[4] < 98 || vitalValues[4] > 103 ||
+      vitalValues[5] < 7 || vitalValues[5] > 90
+    ) {
+      throw new Error("maternalVitals are outside the dataset-supported ranges.");
+    }
   }
 
   return {
@@ -89,6 +127,7 @@ export function validateScreeningInput(value: unknown): ScreeningInput {
     heavyBleeding: input.heavyBleeding as boolean,
     faintingOrSevereDizziness: input.faintingOrSevereDizziness as boolean,
     pregnancyPossible: input.pregnancyPossible as boolean,
+    maternalVitals: maternalVitals as MaternalVitals | undefined,
   };
 }
 
@@ -109,6 +148,10 @@ export function screenHealthRisk(input: ScreeningInput): ScreeningResult {
       ? "moderate indicator"
       : "lower indicator";
 
+  const modelResult =
+    input.pregnancyPossible && input.maternalVitals
+      ? inferMaternalRisk(input.maternalVitals)
+      : undefined;
   return {
     modelVersion: HEALTH_RISK_MODEL_VERSION,
     riskBand,
@@ -122,5 +165,14 @@ export function screenHealthRisk(input: ScreeningInput): ScreeningResult {
       "Call local emergency services for severe or rapidly worsening symptoms.",
     ],
     limitation: LIMITATION,
+    ...(modelResult && {
+      modelVersion: modelResult.modelVersion,
+      riskBand: modelResult.outOfDistribution ? riskBand : modelResult.riskBand,
+      confidence: modelResult.abstained ? "uncertain" : "screening estimate",
+      abstained: modelResult.abstained,
+      outOfDistribution: modelResult.outOfDistribution,
+      probability: modelResult.probability,
+    }),
   };
 }
+import { inferMaternalRisk, type MaternalVitals } from "./maternalRiskModel";

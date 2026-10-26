@@ -45,4 +45,46 @@ describe("health risk screening", () => {
     expect(result.nextSteps[0]).toContain("urgent medical care");
     expect(result.limitation).toContain("not clinically validated");
   });
+
+  it("uses the versioned maternal artifact only for pregnancy vitals", () => {
+    const result = screenHealthRisk(
+      validateScreeningInput({
+        ...validInput,
+        pregnancyPossible: true,
+        maternalVitals: {
+          age: 25,
+          systolicBP: 130,
+          diastolicBP: 80,
+          bloodSugar: 15,
+          bodyTemperature: 98,
+          heartRate: 86,
+        },
+      }),
+    );
+    expect(result.modelVersion).toBe("maternal-risk-v1");
+    expect(result.probability).toBeTypeOf("number");
+    expect(result.limitation).toContain("not clinically validated");
+  });
+
+  it("rejects nested mass-assignment and out-of-range values", () => {
+    expect(() =>
+      validateScreeningInput({
+        ...validInput,
+        maternalVitals: { age: 25, role: "admin" },
+      }),
+    ).toThrow("Unknown maternal vital");
+    expect(() =>
+      validateScreeningInput({
+        ...validInput,
+        maternalVitals: {
+          age: 25,
+          systolicBP: 999,
+          diastolicBP: 80,
+          bloodSugar: 7,
+          bodyTemperature: 98,
+          heartRate: 70,
+        },
+      }),
+    ).toThrow("outside");
+  });
 });
