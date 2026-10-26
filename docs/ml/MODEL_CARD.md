@@ -2,8 +2,9 @@
 
 ## Status
 
-No clinical model is shipped. `ruleset-2026-10-26` identifies a transparent
-software ruleset so responses can be traced and rolled back.
+`maternal-risk-v1` is a small logistic-regression artifact trained on the UCI
+Maternal Health Risk dataset. `ruleset-2026-10-26` remains the fallback for
+non-pregnancy symptom signals. Neither is clinically validated.
 
 ## Intended use
 
@@ -20,11 +21,11 @@ any claim of clinical validation.
 
 ## Data and evaluation
 
-No training data, model weights, performance metrics, calibration results, or
-subgroup claims exist. Reporting invented metrics would be unsafe. A future
-model requires a dataset card, locked test set, leakage checks, confidence
-intervals, calibration, subgroup performance, and clinician-reviewed protocol
-before consideration.
+Measured retrospective holdout results are documented in
+[EVALUATION_REPORT.md](./EVALUATION_REPORT.md). The dataset card documents
+provenance and duplicate/physiological-range problems. Probabilities are not
+recalibrated; the service abstains in an uncertain zone and rejects OOD input.
+These results are not clinical validation.
 
 ## Failure modes and retirement
 

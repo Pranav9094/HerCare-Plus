@@ -14,6 +14,8 @@
 - Audited existing prediction and symptom surfaces.
 - Added strict health-risk input validation.
 - Restricted the inference endpoint to authenticated sessions.
+- Added the UCI dataset card, reproducible Python training/evaluation, a
+  versioned JSON artifact, OOD checks, monitoring telemetry, and a result page.
 - Added versioned, deterministic, abstaining screening-indicator service and
   API response contract.
 - Added unit coverage for validation, uncertainty, limitations, and urgent
@@ -23,9 +25,9 @@
 
 ## Blocked / not claimed
 
-- No legitimate labeled dataset was available in the repository; therefore no
-  ML training, clinical metrics, calibration, subgroup analysis, or model
-  performance claims are made.
+- The dataset is legitimate and licensed, but its duplicate records and
+  collection context limit interpretation. Metrics are retrospective only and
+  no clinical performance claim is made.
 - Persisted authenticated screening records and clinician/admin views are not
   implemented because the current feature is stateless and the application has
   no established screening-record data model.
